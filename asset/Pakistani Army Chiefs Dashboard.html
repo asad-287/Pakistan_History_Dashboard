@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistani Army Chiefs Dashboard (1947-2025)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 50%, #bbe1fa 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-menu a.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+
+
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard-header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #fff, #bbe1fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .pm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .pm-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pm-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00b894, #00cec9, #74b9ff);
+        }
+
+        .pm-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .pm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .pm-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .pm-party {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        .pm-tenure {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .pm-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .vote-ratio {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .vote-win, .vote-lose {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        .vote-win {
+            background: rgba(0, 184, 148, 0.3);
+        }
+
+        .vote-lose {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .key-records {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .records-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .records-list {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .performance-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .performance-bar {
+            width: 100px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #f1c40f, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .timeline {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
+        }
+
+        .timeline-year {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            min-width: 80px;
+        }
+
+        .timeline-content {
+            margin-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+            
+            .pm-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pm-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>🇵🇰 Pakistani Army Chiefs Dashboard</h1>
+        <p>A Comprehensive Overview from 1947 to 2025</p>
+        <p>Made by Asad Rahdari</p>
+    </div>
+<div class="nav-menu">
+        <a href="E:\Website Projects\New folder\New folder (2)\index.html" onclick="showSection('prime-ministers')">Prime Ministers</a>
+        <a href="E:\Website Projects\New folder\New folder (2)\asset\Pakistani Martial Law Dashboard.html" onclick="showSection('martial-law')">Martial Law</a>
+        <a href="E:\Website Projects\New folder\New folder (2)\asset\Pakistani Army Chiefs Dashboard.html" class="active"  onclick="showSection('army-chiefs')">Army Chiefs</a>
+        <a href="E:\Website Projects\New folder\New folder (2)\asset\Pakistani Presidents Dashboard.html" onclick="showSection('presidents')">Presidents</a>
+    </div>
+
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-number">15</div>
+            <div class="stat-label">Total Army Chiefs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">4</div>
+            <div class="stat-label">Chiefs Led Martial Law</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">78</div>
+            <div class="stat-label">Total Years Covered</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">$10B+</div>
+            <div class="stat-label">Total IMF Loans</div>
+        </div>
+    </div>
+
+    <div class="pm-grid">
+        <!-- Frank Messervy -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Frank Messervy</div>
+                    <div class="pm-party">British Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Aug 1947 - Feb 1948</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">0.5 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">N/A</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • First Army Chief of Pakistan<br>
+                    • Oversaw partition military operations<br>
+                    • Transition to Pakistani leadership
+                </div>
+            </div>
+        </div>
+
+        <!-- Douglas Gracey -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Douglas Gracey</div>
+                    <div class="pm-party">British Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Feb 1948 - Jan 1951</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">2.9 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">N/A</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Led during 1948 Kashmir War<br>
+                    • Strengthened military structure<br>
+                    • Handover to Pakistani command
+                </div>
+            </div>
+        </div>
+
+        <!-- Ayub Khan -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Ayub Khan</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Jan 1951 - Oct 1958</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">7.8 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">N/A</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Imposed Martial Law</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • First Pakistani Army Chief<br>
+                    • Modernized military<br>
+                    • Led 1958 coup
+                </div>
+            </div>
+        </div>
+
+        <!-- Musa Khan -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Musa Khan</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Oct 1958 - Jun 1966</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">7.7 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0.3B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">6.0% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Served under Ayub’s martial law<br>
+                    • 1965 War with India<br>
+                    • Strengthened military alliances
+                </div>
+            </div>
+        </div>
+
+        <!-- Yahya Khan -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Yahya Khan</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Jun 1966 - Dec 1971</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">5.5 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0.2B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">5.2% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Resigned</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Led 1970 elections<br>
+                    • East Pakistan crisis<br>
+                    • 1971 War and Bangladesh independence
+                </div>
+            </div>
+        </div>
+
+        <!-- Gul Hassan Khan -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Gul Hassan Khan</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Dec 1971 - Mar 1972</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">0.3 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">N/A</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Removed</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Shortest-serving Army Chief<br>
+                    • Post-1971 war transition<br>
+                    • Removed by Bhutto
+                </div>
+            </div>
+        </div>
+
+        <!-- Tikka Khan -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Tikka Khan</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Mar 1972 - Mar 1976</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">4.0 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$0.5B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">4.5% avg</div>
+                </div>
+                <div dragons="detail-item">
+                    <div class="detail-label">End Reason</divNIV>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Served under Bhutto’s government<br>
+                    • Balochistan operation<br>
+                    • Military reorganization
+                </div>
+            </div>
+        </div>
+
+        <!-- Zia-ul-Haq -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Zia-ul-Haq</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Mar 1976 - Aug 1988</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">12.4 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$1.8B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">6.2% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Death in Crash</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Led 1977 coup<br>
+                    • Islamization policies<br>
+                    • Soviet-Afghan War support
+                </div>
+            </div>
+        </div>
+
+        <!-- Mirza Aslam Beg -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Mirza Aslam Beg</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Aug 1988 - Aug 1991</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">3.0 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$1.4B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">4.9% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Transition to democracy<br>
+                    • Gulf War neutrality<br>
+                    • Nuclear program oversight
+                </div>
+            </div>
+        </div>
+
+        <!-- Asif Nawaz Janjua -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Asif Nawaz Janjua</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Aug 1991 - Jan 1993</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">1.4 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$1.4B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">4.2% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Death</div>
+                </div>
+            </div>
+
+            <۰۹ class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</divide>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Political neutrality<br>
+                    • Military modernization<br>
+                    • Died during tenure
+                </div>
+            </div>
+        </div>
+
+        <!-- Abdul Waheed Kakar -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Abdul Waheed Kakar</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Jan 1993 - Jan 1996</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">3.0 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$1.6B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">4.8% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Maintained military discipline<br>
+                    • Supported democratic process<br>
+                    • Conflict resolution efforts
+                </div>
+            </div>
+        </div>
+
+        <!-- Jehangir Karamat -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Jehangir Karamat</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Jan 1996 - Oct 1998</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">2.8 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$1.5B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">3.7% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Resigned</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Nuclear tests (1998)<br>
+                    • Resigned after civilian tensions<br>
+                    • Strengthened military readiness
+                </div>
+            </div>
+        </div>
+
+        <!-- Pervez Musharraf -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Pervez Musharraf</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Oct 1998 - Nov 2007</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">9.1 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$2.0B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">5.8% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Led 1999 coup<br>
+                    • War on Terror cooperation<br>
+                    • Economic liberalization
+                </div>
+            </div>
+        </div>
+
+        <!-- Ashfaq Parvez Kayani -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Ashfaq Parvez Kayani</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Nov 2007 - Nov 2013</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">6.0 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$11.3B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">2.8% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Counter-terrorism operations<br>
+                    • 2010 floods response<br>
+                    • Strengthened military-civilian ties
+                </div>
+            </div>
+        </div>
+
+        <!-- Raheel Sharif -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Raheel Sharif</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Nov 2013 - Nov 2016</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">3.0 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$6.6B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">4.6% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Operation Zarb-e-Azb<br>
+                    • Improved security situation<br>
+                    • Popular public image
+                </div>
+            </div>
+        </div>
+
+        <!-- Qamar Javed Bajwa -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Qamar Javed Bajwa</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Nov 2016 - Nov 2022</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">6.0 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$6.0B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">3.2% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">End Reason</div>
+                    <div class="detail-value">Retired</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • FATA reforms<br>
+                    • Balochistan security operations<br>
+                    • Extended tenure
+                </div>
+            </div>
+        </div>
+
+        <!-- Asim Munir -->
+        <div class="pm-card">
+            <div class="pm-header">
+                <div>
+                    <div class="pm-name">Asim Munir</div>
+                    <div class="pm-party">Pakistan Army</div>
+                </div>
+            </div>
+            <div class="pm-tenure">Nov 2022 - Present</div>
+            
+            <div class="pm-details">
+                <div class="detail-item">
+                    <div class="detail-label">Tenure Duration</div>
+                    <div class="detail-value">2.6 Years</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IMF Loan</div>
+                    <div class="detail-value">$7.0B</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">GDP Growth</div>
+                    <div class="detail-value">2.1% avg</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value">Current Chief</div>
+                </div>
+            </div>
+
+            <div class="vote-ratio">
+                <div class="vote-win">
+                    <div>Public Support</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+                <div class="vote-lose">
+                    <div>Opposition</div>
+                    <div><strong>N/A</strong></div>
+                </div>
+            </div>
+
+            <div class="key-records">
+                <div class="records-title">Key Records</div>
+                <div class="records-list">
+                    • Economic crisis support<br>
+                    • Counter-terrorism focus<br>
+                    • Current Army Chief
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline">
+        <div class="timeline-title">🕐 Army Chiefs Timeline Overview</div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1947-51</div>
+            <div class="timeline-content">
+                <strong>Messervy & Gracey</strong> - British leadership, partition, 1948 Kashmir War
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1951-58</div>
+            <div class  ="timeline-content">
+                <strong>Ayub Khan</strong> - First Pakistani chief, modernization, 1958 coup
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1958-66</div>
+            <div class="timeline-content">
+                <strong>Musa Khan</strong> - Ayub’s martial law, 1965 War, military alliances
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1966-71</div>
+            <div class="timeline-content">
+                <strong>Yahya Khan</strong> - 1970 elections, East Pakistan crisis, Bangladesh independence
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1971-76</div>
+            <div class="timeline-content">
+                <strong>Gul Hassan & Tikka Khan</strong> - Post-1971 war, Balochistan operations
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1976-88</div>
+            <div class="timeline-content">
+                <strong>Zia-ul-Haq</strong> - 1977 coup, Islamization, Soviet-Afghan War
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1988-98</div>
+            <div class="timeline-content">
+                <strong>Beg, Janjua, Kakar, Karamat</strong> - Democratic transition, nuclear tests
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">1998-07</div>
+            <div class="timeline-content">
+                <strong>Pervez Musharraf</strong> - 1999 coup, War on Terror, economic reforms
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">2007-16</div>
+            <div class="timeline-content">
+                <strong>Kayani & Sharif</strong> - Counter-terrorism, Zarb-e-Azb, 2010 floods
+            </div>
+        </div>
+        
+        <div class="timeline-item">
+            <div class="timeline-year">2016-25</div>
+            <div class="timeline-content">
+                <strong>Bajwa & Munir</strong> - FATA reforms, economic crisis, counter-terrorism
+            </div>
+        </div>
+    </div>
+</body>
+</html>
