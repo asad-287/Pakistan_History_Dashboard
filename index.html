@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistani Political Dashboard (1947-2025)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 50%, #bbe1fa 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard-header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #fff, #bbe1fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-menu a.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .pm-grid, .martial-grid, .army-grid, .president-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .pm-card, .martial-card, .army-card, .president-card {
+            
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pm-card::before, .martial-card::before, .army-card::before, .president-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00b894, #00cec9, #74b9ff);
+        }
+
+        .pm-card:hover, .martial-card:hover, .army-card:hover, .president-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .pm-header, .martial-header, .army-header, .president-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .pm-name, .martial-name, .army-name, .president-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .pm-party, .martial-regime, .army-branch, .president-party {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        .pm-tenure, .martial-tenure, .army-tenure, .president-tenure {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .pm-details, .martial-details, .army-details, .president-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .vote-ratio {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .vote-win, .vote-lose {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        .vote-win {
+            background: rgba(0, 184, 148, 0.3);
+        }
+
+        .vote-lose {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .key-records {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .records-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .records-list {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .timeline {
+
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
+        }
+
+        .timeline-year {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            min-width: 80px;
+        }
+
+        .timeline-content {
+            margin-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+            
+            .pm-grid, .martial-grid, .army-grid, .president-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pm-details, .martial-details, .army-details, .president-details {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>🇵🇰 Pakistani Political Dashboard</h1>
+        <p>A Comprehensive Overview from 1947 to 2025</p>
+        <p>Made by Asad Rahdari</p>
+    </div>
+
+    <div class="nav-menu">
+        <a href="E:\Website Projects\New folder\New folder (2)\pak_pm_dashboard 1947-2025.html" class="active" onclick="showSection('prime-ministers')">Prime Ministers</a>
+        <a href="E:\Website Projects\New folder\New folder (2)\asset\Pakistani Martial Law Dashboard.html" onclick="showSection('martial-law')">Martial Law</a>
+        <a href="E:\Website Projects\New folder\New folder (2)\asset\Pakistani Army Chiefs Dashboard.html" onclick="showSection('army-chiefs')">Army Chiefs</a>
+        <a href="E:\Website Projects\New folder\New folder (2)\asset\Pakistani Presidents Dashboard.html" onclick="showSection('presidents')">Presidents</a>
+    </div>
+
+    <div id="prime-ministers" class="section active">
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">13</div>
+                <div class="stat-label">Total Prime Ministers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Completed Full Terms</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">35</div>
+                <div class="stat-label">Total Years Covered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">$50B+</div>
+                <div class="stat-label">Total IMF Loans</div>
+            </div>
+        </div>
+
+        <div class="pm-grid">
+            <!-- Nawaz Sharif (1st Term) -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Nawaz Sharif</div>
+                        <div class="pm-party">PML-N</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">Nov 1990 - July 1993 (1st Term)</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.7 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$1.4B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">4.2% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Dissolved</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>237</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>100</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Motorway project initiated<br>
+                        • Economic liberalization policies<br>
+                        • Conflict with President Ghulam Ishaq Khan
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benazir Bhutto (2nd Term) -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Benazir Bhutto</div>
+                        <div class="pm-party">PPP</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">Oct 1993 - Nov 1996 (2nd Term)</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">3.1 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$1.6B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">4.8% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Dismissed</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>121</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>216</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • First female PM of Muslim world (2nd term)<br>
+                        • Nuclear program advancement<br>
+                        • Corruption allegations
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nawaz Sharif (2nd Term) -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Nawaz Sharif</div>
+                        <div class="pm-party">PML-N</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">Feb 1997 - Oct 1999 (2nd Term)</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.7 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$1.5B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">3.7% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Military Coup</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>134</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>203</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Nuclear tests (May 1998)<br>
+                        • Kargil conflict with India<br>
+                        • Constitutional amendments (14th)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zafarullah Khan Jamali -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Zafarullah Khan Jamali</div>
+                        <div class="pm-party">PML-Q</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">Nov 2002 - June 2004</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">1.6 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$1.2B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">6.2% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>172</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>165</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • First PM from Balochistan<br>
+                        • War on Terror cooperation<br>
+                        • Economic recovery post-sanctions
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shaukat Aziz -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Shaukat Aziz</div>
+                        <div class="pm-party">PML-Q</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">Aug 2004 - Nov 2007</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">3.3 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$0.8B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">6.8% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Term Ended</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>191</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>146</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Former Citibank executive<br>
+                        • Highest GDP growth period<br>
+                        • Banking sector reforms
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yousaf Raza Gillani -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Yousaf Raza Gillani</div>
+                        <div class="pm-party">PPP</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">March 2008 - June  2012</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">4.3 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$11.3B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">2.8% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Disqualified</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>264</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>73</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Longest serving PM (4+ years)<br>
+                        • 2010 floods crisis management<br>
+                        • 18th Amendment passage
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nawaz Sharif (3rd Term) -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Nawaz Sharif</div>
+                        <div class="pm-party">PML-N</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">June 2013 - July 2017 (3rd Term)</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">4.1 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$6.6B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">4.6% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Disqualified</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>244</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>93</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • CPEC (China-Pakistan Economic Corridor)<br>
+                        • Panama Papers disqualification<br>
+                        • Energy crisis addressed
+                    </div>
+                </div>
+            </div>
+
+            <!-- Imran Khan -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Imran Khan</div>
+                        <div class="pm-party">PTI</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">Aug 2018 - April 2022</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">3.7 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$6.0B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">3.2% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">No Confidence</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>176</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>No Confidence</div>
+                        <div><strong>174</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Former cricket captain<br>
+                        • COVID-19 pandemic management<br>
+                        • First PM removed via no-confidence vote
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shehbaz Sharif -->
+            <div class="pm-card">
+                <div class="pm-header">
+                    <div>
+                        <div class="pm-name">Shehbaz Sharif</div>
+                        <div class="pm-party">PML-N</div>
+                    </div>
+                </div>
+                <div class="pm-tenure">April 2022 - August 2023, March 2024 - Present</div>
+                
+                <div class="pm-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.8 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IMF Loan</div>
+                        <div class="detail-value">$7.0B</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">GDP Growth</div>
+                        <div class="detail-value">2.1% avg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">Current PM</div>
+                    </div>
+                </div>
+
+                <div class="vote-ratio">
+                    <div class="vote-win">
+                        <div>Winning Votes</div>
+                        <div><strong>201</strong></div>
+                    </div>
+                    <div class="vote-lose">
+                        <div>Opposition</div>
+                        <div><strong>115</strong></div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Brother of Nawaz Sharif<br>
+                        • Economic crisis management<br>
+                        • Currently serving (2nd non-consecutive term)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-title">🕐 Political Timeline Overview</div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">1990-93</div>
+                <div class="timeline-content">
+                    <strong>Nawaz Sharif (1st)</strong> - Economic liberalization, Motorway project, political instability
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">1993-96</div>
+                <div class="timeline-content">
+                    <strong>Benazir Bhutto (2nd)</strong> - Nuclear advancement, corruption allegations, dismissed by President
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">1997-99</div>
+                <div class="timeline-content">
+                    <strong>Nawaz Sharif (2nd)</strong> - Nuclear tests, Kargil conflict, ended by military coup
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">1999-08</div>
+                <div class="timeline-content">
+                    <strong>Military Rule (Musharraf)</strong> - Zafarullah Jamali & Shaukat Aziz as civilian PMs
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">2008-13</div>
+                <div class="timeline-content">
+                    <strong>PPP Era</strong> - Gillani's longest tenure, 18th Amendment, economic challenges
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">2013-18</div>
+                <div class="timeline-content">
+                    <strong>Nawaz Sharif (3rd)</strong> - CPEC launch, Panama Papers, disqualified by Supreme Court
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">2018-22</div>
+                <div class="timeline-content">
+                    <strong>Imran Khan Era</strong> - PTI government, COVID-19 crisis, first no-confidence removal
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-year">2022-25</div>
+                <div class="timeline-content">
+                    <strong>Shehbaz Sharif</strong> - Economic crisis, IMF bailout, coalition government challenges
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="martial-law" class="section">
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Total Martial Laws</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">21</div>
+                <div class="stat-label">Total Years</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Military Rulers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1977</div>
+                <div class="stat-label">Longest Regime Start</div>
+            </div>
+        </div>
+
+        <div class="martial-grid">
+            <!-- Ayub Khan -->
+            <div class="martial-card">
+                <div class="martial-header">
+                    <div>
+                        <div class="martial-name">Ayub Khan</div>
+                        <div class="martial-regime">Military</div>
+                    </div>
+                </div>
+                <div class="martial-tenure">Oct 1958 - March 1969</div>
+                
+                <div class="martial-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">10.5 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Conflict</div>
+                        <div class="detail-value">1965 War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Economic Policy</div>
+                        <div class="detail-value">Industrialization</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • First military coup in Pakistan<br>
+                        • Introduced 1962 Constitution<br>
+                        • Economic growth but political unrest
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yahya Khan -->
+            <div class="martial-card">
+                <div class="martial-header">
+                    <div>
+                        <div class="martial-name">Yahya Khan</div>
+                        <div class="martial-regime">Military</div>
+                    </div>
+                </div>
+                <div class="martial-tenure">March 1969 - Dec 1971</div>
+                
+                <div class="martial-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.7 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Conflict</div>
+                        <div class="detail-value">1971 War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Economic Policy</div>
+                        <div class="detail-value">Stagnation</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Oversaw 1971 Bangladesh separation<br>
+                        • Conducted 1970 elections<br>
+                        • Political crisis and military defeat
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zia-ul-Haq -->
+            <div class="martial-card">
+                <div class="martial-header">
+                    <div>
+                        <div class="martial-name">Zia-ul-Haq</div>
+                        <div class="martial-regime">Military</div>
+                    </div>
+                </div>
+                <div class="martial-tenure">July 1977 - Aug 1988</div>
+                
+                <div class="martial-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">11.1 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Conflict</div>
+                        <div class="detail-value">Afghan War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Economic Policy</div>
+                        <div class="detail-value">Privatization</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Died in Crash</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Islamization policies<br>
+                        • Supported Afghan Mujahideen<br>
+                        • Longest martial law period
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="army-chiefs" class="section">
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">16</div>
+                <div class="stat-label">Total Army Chiefs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">78</div>
+                <div class="stat-label">Total Years</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Extended Tenures</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1998</div>
+                <div class="stat-label">Nuclear Test Year</div>
+            </div>
+        </div>
+
+        <div class="army-grid">
+            <!-- Frank Messervy -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Frank Messervy</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Aug 1947 - Feb 1948</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">0.5 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">1947 Kashmir War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • First Commander-in-Chief<br>
+                        • Oversaw partition military division<br>
+                        • Brief tenure during independence
+                    </div>
+                </div>
+            </div>
+
+            <!-- Douglas Gracey -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Douglas Gracey</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Feb 1948 - Jan 1951</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.9 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Kashmir Conflict</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Second British Commander-in-Chief<br>
+                        • Managed early military organization<br>
+                        • Stabilized army post-partition
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ayub Khan -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Ayub Khan</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Jan 1951 - Oct 1958</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">7.8 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Military Buildup</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Imposed Martial Law</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • First Pakistani Army Chief<br>
+                        • Led 1958 coup<br>
+                        • Modernized military structure
+                    </div>
+                </div>
+            </div>
+
+            <!-- Musa Khan -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Musa Khan</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Oct 1958 - Sep 1966</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">8.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">1965 War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Served under Ayub Khan’s regime<br>
+                        • Led army during 1965 war<br>
+                        • Strengthened military discipline
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yahya Khan -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class=" army-name">Yahya Khan</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Sep 1966 - Dec 1971</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">5.3 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">1971 War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Oversaw 1971 war and Bangladesh separation<br>
+                        • Conducted 1970 elections<br>
+                        • Resigned after military defeat
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gul Hassan Khan -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Gul Hassan Khan</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Dec 1971 - March 1972</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">0.3 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Post-War Recovery</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">Lieutenant General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Removed</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Shortest tenure as Army Chief<br>
+                        • Post-1971 war reorganization<br>
+                        • Removed by Bhutto government
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tikka Khan -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Tikka Khan</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">March 1972 - March 1976</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">4.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Balochistan Insurgency</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Managed Balochistan operations<br>
+                        • Strengthened military post-1971<br>
+                        • Served under Bhutto
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zia-ul-Haq -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Zia-ul-Haq</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">March 1976 - Aug 1988</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">12.5 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Afghan War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Died in Crash</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Led 1977 coup<br>
+                        • Longest-serving Army Chief<br>
+                        • Supported Afghan Mujahideen
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mirza Aslam Beg -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Mirza Aslam Beg</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Aug 1988 - Aug 1991</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">3.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Gulf War Neutrality</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Transition to democracy<br>
+                        • Maintained military neutrality<br>
+                        • Strengthened defense policies
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asif Nawaz Janjua -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Asif Nawaz Janjua</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Aug 1991 - Jan 1993</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">1.4 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Internal Security</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Died</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Focused on internal security<br>
+                        • Died during tenure<br>
+                        • Short but stable leadership
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abdul Waheed Kakar -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Abdul Waheed Kakar</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Jan 1993 - Jan 1996</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">3.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Political Stability</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Oversaw 1993 political crisis<br>
+                        • Ensured democratic transition<br>
+                        • Avoided military intervention
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jehangir Karamat -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Jehangir Karamat</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Jan 1996 - Oct 1998</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.8 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Nuclear Tests</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Oversaw 1998 nuclear tests<br>
+                        • Resigned over civilian-military tensions<br>
+                        • Strengthened strategic capabilities
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pervez Musharraf -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Pervez Musharraf</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Oct 1998 - Nov 2007</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">9.1 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">War on Terror</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Led 1999 coup<br>
+                        • War on Terror cooperation<br>
+                        • Extended tenure as COAS
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ashfaq Parvez Kayani -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Ashfaq Parvez Kayani</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Nov 2007 - Nov 2013</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">6.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Swat Operation</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Led anti-Taliban operations<br>
+                        • Oversaw 2010 floods response<br>
+                        • Extended tenure
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raheel Sharif -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Raheel Sharif</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Nov 2013 - Nov 2016</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">3.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Zarb-e-Azb</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Launched Operation Zarb-e-Azb<br>
+                        • Strengthened counter-terrorism<br>
+                        • Popular public image
+                    </div>
+                </div>
+            </div>
+
+            <!-- Qamar Javed Bajwa -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Qamar Javed Bajwa</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Nov 2016 - Nov 2022</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">6.0 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Radd-ul-Fasaad</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Retired</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Led Operation Radd-ul-Fasaad<br>
+                        • Managed 2019 India-Pakistan standoff<br>
+                        • Extended tenure
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asim Munir -->
+            <div class="army-card">
+                <div class="army-header">
+                    <div>
+                        <div class="army-name">Asim Munir</div>
+                        <div class="army-branch">Pakistan Army</div>
+                    </div>
+                </div>
+                <div class="army-tenure">Nov 2022 - Present</div>
+                
+                <div class="army-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.6 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Operation</div>
+                        <div class="detail-value">Counter-Terrorism</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rank</div>
+                        <div class="detail-value">General</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">Current Chief</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Ongoing counter-terrorism efforts<br>
+                        • Economic crisis coordination<br>
+                        • Current COAS as of 2025
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="presidents" class="section">
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">14</div>
+                <div class="stat-label">Total Presidents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">78</div>
+                <div class="stat-label">Total Years</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Military Presidents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2001</div>
+                <div class="stat-label">Longest Tenure Start</div>
+            </div>
+        </div>
+
+        <div class="president-grid">
+            <!-- Iskander Mirza -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Iskander Mirza</div>
+                        <div class="president-party">Republican</div>
+                    </div>
+                </div>
+                <div class="president-tenure">March 1956 - Oct 1958</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.6 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">1956 Constitution</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Civil Servant</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Deposed</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • First President of Pakistan<br>
+                        • Imposed 1958 martial law<br>
+                        • Deposed by Ayub Khan
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ayub Khan -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Ayub Khan</div>
+                        <div class="president-party">Military</div>
+                    </div>
+                </div>
+                <div class="president-tenure">Oct 1958 - March 1969</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">10.5 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">1965 War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Military</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Introduced 1962 Constitution<br>
+                        • Industrialization push<br>
+                        • Resigned amid protests
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yahya Khan -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Yahya Khan</div>
+                        <div class="president-party">Military</div>
+                    </div>
+                </div>
+                <div class="president-tenure">March 1969 - Dec 1971</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">2.7 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">1971 War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Military</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Oversaw Bangladesh separation<br>
+                        • Conducted 1970 elections<br>
+                        • Resigned after defeat
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zulfikar Ali Bhutto -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Zulfikar Ali Bhutto</div>
+                        <div class="president-party">PPP</div>
+                    </div>
+                </div>
+                <div class="president-tenure">Dec 1971 - Aug 1973</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">1.7 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">1973 Constitution</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Politician</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Became PM</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Enacted 1973 Constitution<br>
+                        • Nationalization policies<br>
+                        • Transitioned to Prime Minister
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fazal Ilahi Chaudhry -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Fazal Ilahi Chaudhry</div>
+                        <div class="president-party">PPP</div>
+                    </div>
+                </div>
+                <div class="president-tenure">Aug 1973 - Sep 1978</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">5.1 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">1977 Coup</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Politician</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Served under Bhutto and Zia<br>
+                        • Ceremonial role post-1973<br>
+                        • Resigned after martial law
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zia-ul-Haq -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Zia-ul-Haq</div>
+                        <div class="president-party">Military</div>
+                    </div>
+                </div>
+                <div class="president-tenure">Sep 1978 - Aug 1988</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">9.9 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">Afghan War</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Military</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Died in Crash</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Islamization policies<br>
+                        • 8th Amendment empowered President<br>
+                        • Died in plane crash
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ghulam Ishaq Khan -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Ghulam Ishaq Khan</div>
+                        <div class="president-party">Independent</div>
+                    </div>
+                </div>
+                <div class="president-tenure">Aug 1988 - July 1993</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">4.9 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</div>
+                        <div class="detail-value">1990-93 Dismissals</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Background</div>
+                        <div class="detail-value">Civil Servant</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Reason</div>
+                        <div class="detail-value">Resigned</div>
+                    </div>
+                </div>
+
+                <div class="key-records">
+                    <div class="records-title">Key Records</div>
+                    <div class="records-list">
+                        • Dismissed two PMs (1988, 1993)<br>
+                        • Political instability period<br>
+                        • Resigned after crisis
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farooq Leghari -->
+            <div class="president-card">
+                <div class="president-header">
+                    <div>
+                        <div class="president-name">Farooq Leghari</div>
+                        <div class="president-party">PPP</div>
+                    </div>
+                </div>
+                <div class="president-tenure">Nov 1993 - Dec 1997</div>
+                
+                <div class="president-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tenure Duration</div>
+                        <div class="detail-value">4.1 Years</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Major Event</
